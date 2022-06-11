@@ -1,13 +1,12 @@
-const prod = process.env.NODE_ENV === 'production';
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-module.exports = {
-    mode: prod ? 'production' : 'development',
+module.exports = (env, arg) => ({
     entry: './src/index.tsx',
     output: {
-        path: __dirname + '/build/',
-        filename: 'index.js',
+        path: path.resolve(__dirname, 'build'),
+        filename: 'bundle.[contenthash].js',
     },
     module: {
         rules: [
@@ -25,11 +24,17 @@ module.exports = {
             },
         ],
     },
-    devtool: prod ? undefined : 'source-map',
+    devtool: arg.mode === 'production' ? false : 'eval-source-map',
     plugins: [
         new HtmlWebpackPlugin({
             template: 'public/index.html',
+            favicon: 'public/favicon.ico',
+            hash: true,
         }),
-        new MiniCssExtractPlugin(),
+        new MiniCssExtractPlugin({
+            filename: '[name].[contenthash].css',
+            chunkFilename: '[id].css',
+            ignoreOrder: false,
+        }),
     ],
-};
+});

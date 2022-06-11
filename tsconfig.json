@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
     "outDir": "build",
     "esModuleInterop" : true,
-    "sourceMap": true,
-    "noImplicitAny": true,
     "lib": ["esnext", "dom"],
-    "module": "esnext",
-    "target": "esnext",
+    "skipLibCheck": true,
     "jsx": "react",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src"],
   "exclude": ["node_modules"]
