@@ -1,0 +1,15 @@
+.input {
+    margin-bottom: 10px;
+    border: medium none;
+    color: var(--global-color-cream-white);
+    background-color: transparent;
+    border-bottom: var(--global-color-cream-white) solid 3px;
+    width: 300px;
+    font-weight: 400;
+    text-align: center;
+    padding: 8px;
+}
+
+.input:focus::placeholder {
+    opacity: 0;
+}

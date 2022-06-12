@@ -1,0 +1,18 @@
+body, html { margin: 0; padding: 0; background: #202124; font-family: "Poppins", sans-serif; color: #f6f1eb; }
+
+* {
+    box-sizing: border-box;
+    transition: color 0.5s ease 0s, background-color 0.5s ease 0s, stroke 0.5s ease 0s;
+}
+
+*:focus { outline-style: none; }
+
+:root {
+    --global-font-family: "Poppins", sans-serif;
+    --global-color-cream-white: #f6f1eb;
+    --global-color-gray: #757575;
+    --global-color-cream-black: #202124FF;
+    --global-font-size-default: 1rem;
+    --global-font-size-medium: 1.25rem;
+    --global-font-size-large: 1.5rem;
+}

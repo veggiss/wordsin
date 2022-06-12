@@ -1,0 +1,26 @@
+.row { display: flex; flex-direction: row; }
+.column { display: flex; flex-direction: column; }
+.centerHorizontal { display: flex; justify-content: center; }
+.centerVertical { display: flex; align-items: center; }
+.spaceEvenly { display: flex; justify-content: space-evenly; }
+.spaceBetween { display: flex; justify-content: space-between; }
+.fullWidth { width: 100%; }
+.fullHeight { height: 100%; }
+.uppercase { text-transform: uppercase; }
+.textAlignCenter { text-align: center; }
+.pointer { cursor: default; }
+
+.fontDefault {
+    font-family: var(--global-font-family);
+    font-size: var(--global-font-size-default);
+}
+
+.fontMedium {
+    font-family: var(--global-font-family);
+    font-size: var(--global-font-size-medium);
+}
+
+.fontLarge {
+    font-family: var(--global-font-family);
+    font-size: var(--global-font-size-large);
+}
