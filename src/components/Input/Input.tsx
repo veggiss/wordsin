@@ -5,26 +5,26 @@ import clsx from 'clsx';
 
 type Props = {
     placeholder?: string;
-    label?: string;
     size?: 'default' | 'large';
     onChange?: (v: string) => void;
     onEnter?: (v: string) => void;
     clearOnEnter?: boolean;
     uppercase?: boolean;
     variant?: 'light' | 'dark';
+    initialValue?: string;
 };
 
 const Input: FC<Props> = ({
     placeholder,
-    label,
     onEnter,
     onChange,
+    initialValue,
     clearOnEnter = false,
     uppercase = false,
     size = 'default',
     variant = 'light',
 }) => {
-    const [value, setValue] = useState<string>('');
+    const [value, setValue] = useState<string>(initialValue ? initialValue : '');
 
     const changeEvent = (e: ChangeEvent<HTMLInputElement>) => {
         const text = e.target.value;
@@ -42,7 +42,6 @@ const Input: FC<Props> = ({
 
     return (
         <div className={gs.column}>
-            {label ? <span>Label</span> : null}
             <input
                 placeholder={placeholder}
                 className={clsx([

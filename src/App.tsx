@@ -1,18 +1,20 @@
 import React, { FC } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Game from './pages/Game/Game';
-import { socket, SocketContext } from './context/SocketContext';
 import Home from './pages/Home/Home';
+import Play from './pages/Play/Play';
+import Provider from './context/Provider';
 
-const App: FC = () => (
-    <SocketContext.Provider value={socket}>
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/:id" element={<Game />} />
-            </Routes>
-        </BrowserRouter>
-    </SocketContext.Provider>
-);
+const App: FC = () => {
+    return (
+        <Provider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/:roomId" element={<Play />} />
+                </Routes>
+            </BrowserRouter>
+        </Provider>
+    );
+};
 
 export default App;

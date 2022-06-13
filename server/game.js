@@ -6,7 +6,6 @@ class Player {
         this.disconnected = false;
         this.ready = false;
         this.points = 0;
-        this.name = '';
     }
 }
 
@@ -18,6 +17,7 @@ class Game {
 
         this.gameState = {
             roundTime: 30,
+            initiationTimer: 5,
             roomId: roomId,
             currentWord: data.word,
             gameStarted: false,
@@ -36,10 +36,14 @@ class Game {
     update() {
         if (this.gameState.gameEnded || !this.gameState.gameStarted) return;
 
-        if (this.gameState.roundTime > 0) {
-            this.gameState.roundTime--;
+        if (this.gameState.initiationTimer > 0) {
+            this.gameState.initiationTimer--;
         } else {
-            this.gameState.gameEnded = true;
+            if (this.gameState.roundTime > 0) {
+                this.gameState.roundTime--;
+            } else {
+                this.gameState.gameEnded = true;
+            }
         }
     }
 

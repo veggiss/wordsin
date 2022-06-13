@@ -3,9 +3,9 @@
     font-size: var(--global-font-size-default);
     border: medium none;
     border-radius: 5px;
-    cursor: pointer;
     width: 225px;
     height: 50px;
+    margin: 0.5rem 0;
 }
 
 .dark {
@@ -16,4 +16,9 @@
 .light {
     color: var(--global-color-cream-black);
     background-color:  var(--global-color-cream-white);
+}
+
+.success {
+    color: var(--global-color-cream-black);
+    background-color: #7bc96a;
 }

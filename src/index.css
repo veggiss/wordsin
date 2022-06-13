@@ -9,6 +9,7 @@ body, html { margin: 0; padding: 0; background: #202124; font-family: "Poppins",
 
 :root {
     --global-font-family: "Poppins", sans-serif;
+    --global-font-size-small: 0.75rem;
     --global-font-size-default: 1rem;
     --global-font-size-medium: 1.25rem;
     --global-font-size-large: 1.5rem;

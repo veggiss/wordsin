@@ -17,6 +17,9 @@ const EVENTS = {
     joinRoom: 'join-room',
     connection: 'connection',
     disconnect: 'disconnect',
+    roomCreated: 'room-created',
+    gameState: 'game-state',
+    playerReady: 'player-ready',
 };
 
 const games = [];
@@ -26,16 +29,20 @@ app.use(express.static('build'));
 
 setInterval(() => {
     games.forEach((game) => {
-        game.update();
+        if (game.gameState.gameStarted) {
+            game.update();
 
-        io.in(game.gameState.roomId).emit(EVENTS.gameTick, game);
+            io.in(game.gameState.roomId).emit(EVENTS.gameTick, game.gameState.roundTime);
+        }
     });
 }, 1000);
 
-const roomExist = (roomId) => io.sockets.adapter.rooms.get(roomId);
+const emitGameState = (game) => io.in(game.gameState.roomId).emit(EVENTS.gameState, game.gameState);
 const gameExist = (roomId) => games.some((game) => game.gameState.roomId === roomId);
-const findGame = (roomId) => games.find((game) => game.gameState.roomId === roomId);
-const findGameFromPlayer = (clientId) =>
+
+const getRoom = (roomId) => io.sockets.adapter.rooms.get(roomId);
+const getGameFromRoomId = (roomId) => games.find((game) => game.gameState.roomId === roomId);
+const getGameFromClientId = (clientId) =>
     games.find((game) => [game.gameState.player1.id, game.gameState.player2.id].some((id) => clientId === id));
 
 app.all('*', (req, res) => {
@@ -46,38 +53,47 @@ app.all('*', (req, res) => {
 
 io.on(EVENTS.connection, (socket) => {
     socket.on(EVENTS.joinRoom, (roomId) => {
-        const game = findGame(roomId);
+        const game = getGameFromRoomId(roomId);
         const clientId = socket.client.id;
 
-        if (roomExist(roomId) && game) {
-            socket.join(roomId);
-            game.playerJoin(clientId);
-            game.setPlayerReady(clientId);
+        if (game) {
+            const room = getRoom(roomId);
 
-            console.log(socket.client.id, 'joining', roomId);
-        } else socket.emit('errorMessage', `Unknown room id '${roomId}'`);
+            if (!room || (room.size < 2 && !room.has(clientId))) {
+                socket.join(roomId);
+                game.playerJoin(clientId);
+
+                emitGameState(game);
+            }
+        } else {
+            const newGame = new Game(roomId);
+
+            newGame.playerJoin(clientId);
+            games.push(newGame);
+
+            socket.join(roomId);
+            emitGameState(newGame);
+        }
     });
 
-    socket.on(EVENTS.createRoom, () => {
+    socket.on(EVENTS.playerReady, () => {
         const clientId = socket.client.id;
+        const game = getGameFromClientId(clientId);
 
-        if (!gameExist(clientId) && !roomExist(clientId)) {
-            const game = new Game(clientId);
-
-            socket.join(clientId);
-            game.playerJoin(clientId);
+        if (game) {
             game.setPlayerReady(clientId);
-            games.push(game);
-
-            console.log(clientId, 'created a room');
-        } else socket.emit('errorMessage', `Room id '${clientId}' already exists`);
+            emitGameState(game);
+        }
     });
 
     socket.on(EVENTS.disconnect, () => {
         const clientId = socket.client.id;
-        const game = findGameFromPlayer(clientId);
+        const game = getGameFromClientId(clientId);
 
-        if (game) game.playerLeave(clientId);
+        if (game) {
+            game.playerLeave(clientId);
+            emitGameState(game);
+        }
     });
 });
 
