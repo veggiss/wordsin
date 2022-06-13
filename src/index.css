@@ -9,10 +9,15 @@ body, html { margin: 0; padding: 0; background: #202124; font-family: "Poppins",
 
 :root {
     --global-font-family: "Poppins", sans-serif;
-    --global-color-cream-white: #f6f1eb;
-    --global-color-gray: #757575;
-    --global-color-cream-black: #202124FF;
     --global-font-size-default: 1rem;
     --global-font-size-medium: 1.25rem;
     --global-font-size-large: 1.5rem;
+    --global-font-size-extra-large: 2rem;
+    --global-font-weight-default: 400;
+    --global-font-weight-demi: 500;
+    --global-font-weight-thick: 800;
+    --global-color-cream-white: #f6f1eb;
+    --global-color-gray: #757575;
+    --global-color-cream-black: #202124FF;
+    --global-color-blueish: #7a91ec;
 }

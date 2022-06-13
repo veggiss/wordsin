@@ -24,3 +24,8 @@
     font-family: var(--global-font-family);
     font-size: var(--global-font-size-large);
 }
+
+.fontExtraLarge {
+    font-family: var(--global-font-family);
+    font-size: var(--global-font-size-extra-large);
+}

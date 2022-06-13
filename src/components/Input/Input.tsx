@@ -11,6 +11,7 @@ type Props = {
     onEnter?: (v: string) => void;
     clearOnEnter?: boolean;
     uppercase?: boolean;
+    variant?: 'light' | 'dark';
 };
 
 const Input: FC<Props> = ({
@@ -21,6 +22,7 @@ const Input: FC<Props> = ({
     clearOnEnter = false,
     uppercase = false,
     size = 'default',
+    variant = 'light',
 }) => {
     const [value, setValue] = useState<string>('');
 
@@ -49,6 +51,10 @@ const Input: FC<Props> = ({
                         [gs.uppercase]: uppercase,
                         [gs.fontDefault]: size === 'default',
                         [gs.fontLarge]: size === 'large',
+                    },
+                    {
+                        [s.light]: variant === 'light',
+                        [s.dark]: variant === 'dark',
                     },
                 ])}
                 value={value}

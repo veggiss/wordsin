@@ -1,0 +1,19 @@
+.button {
+    font-family: var(--global-font-family);
+    font-size: var(--global-font-size-default);
+    border: medium none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 225px;
+    height: 50px;
+}
+
+.dark {
+    color: var(--global-color-cream-white);
+    background-color:  var(--global-color-cream-black);
+}
+
+.light {
+    color: var(--global-color-cream-black);
+    background-color:  var(--global-color-cream-white);
+}

@@ -1,0 +1,6 @@
+.container {
+    padding: 1rem 1.5rem;
+    margin: 2rem;
+    border-radius: 10px;
+    background-color: var(--global-color-cream-white);
+}
