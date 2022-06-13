@@ -10,6 +10,9 @@ module.exports = (env, arg) => ({
         filename: 'bundle.[contenthash].js',
         clean: true,
     },
+    devServer: {
+        historyApiFallback: true,
+    },
     module: {
         rules: [
             {

@@ -38,7 +38,7 @@ const findGame = (roomId) => games.find((game) => game.gameState.roomId === room
 const findGameFromPlayer = (clientId) =>
     games.find((game) => [game.gameState.player1.id, game.gameState.player2.id].some((id) => clientId === id));
 
-app.get('/', (req, res) => {
+app.all('*', (req, res) => {
     res.sendFile(HTML_FILE, (err) => {
         if (err) res.status(500).send(err);
     });

@@ -1,15 +1,17 @@
 import React, { FC } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Game from './pages/Game/Game';
 import { socket, SocketContext } from './context/SocketContext';
+import Home from './pages/Home/Home';
 
 const App: FC = () => (
     <SocketContext.Provider value={socket}>
-        <Router>
+        <BrowserRouter>
             <Routes>
-                <Route path="/" element={<Game />} />
+                <Route path="/" element={<Home />} />
+                <Route path="/:id" element={<Game />} />
             </Routes>
-        </Router>
+        </BrowserRouter>
     </SocketContext.Provider>
 );
 
