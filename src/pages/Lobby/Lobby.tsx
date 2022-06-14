@@ -34,8 +34,8 @@ const Lobby: FC = () => {
             <div className={clsx(gs.colorGray, gs.textAlignCenter)}>
                 <div className={gs.paddingBottom}>
                     All answers are at least three letters or more. <br />
-                    You gain one point for each correct guessed word. <br />
-                    The timer is reset when someone gains point. <br />
+                    The timer resets when someone correctly answers. <br />
+                    You gain one point for each letter in a correctly guessed word.
                 </div>
 
                 <span>Use the link to join this lobby. Ready up to start the game.</span>
