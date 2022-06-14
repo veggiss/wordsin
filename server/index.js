@@ -11,13 +11,10 @@ const io = new Server(server);
 const PORT = process.env.PORT || 8080;
 const DIST_DIR = path.join(__dirname, '..', 'build');
 const HTML_FILE = path.join(DIST_DIR, 'index.html');
-const EVENTS = {
-    gameTick: 'game-tick',
-    createRoom: 'create-room',
+const SOCKET_EVENT = {
     joinRoom: 'join-room',
     connection: 'connection',
     disconnect: 'disconnect',
-    roomCreated: 'room-created',
     gameState: 'game-state',
     playerReady: 'player-ready',
     guessWord: 'guess-word',
@@ -28,9 +25,7 @@ const games = {};
 app.use(express.json());
 app.use(express.static('build'));
 
-const emitGameState = (game) => io.in(game.gameState.roomId).emit(EVENTS.gameState, game.gameState);
-const emitRoundTime = (game) => io.in(game.gameState.roomId).emit(EVENTS.gameTick, game.gameState.roundTime);
-
+const emitGameState = (game) => io.in(game.gameState.roomId).emit(SOCKET_EVENT.gameState, game.gameState);
 const pushGame = (game) => (games[game.gameState.roomId] = game);
 const getGames = () => Object.values(games);
 const getRoom = (roomId) => io.sockets.adapter.rooms.get(roomId);
@@ -47,21 +42,15 @@ setInterval(() => {
     getGames().forEach((game) => {
         if (game.gameState.gameStarted) {
             game.update();
+            emitGameState(game);
 
-            if (game.gameState.initiationTime > 0) {
-                emitGameState(game);
-            } else if (!game.gameState.gameEnded) {
-                game.gameState.roundTime === 30 ? emitGameState(game) : emitRoundTime(game);
-            } else {
-                emitGameState(game);
-                delete games[game.gameState.roomId];
-            }
+            if (game.gameState.gameEnded) delete games[game.gameState.roomId];
         }
     });
 }, 1000);
 
-io.on(EVENTS.connection, (socket) => {
-    socket.on(EVENTS.joinRoom, (roomId) => {
+io.on(SOCKET_EVENT.connection, (socket) => {
+    socket.on(SOCKET_EVENT.joinRoom, (roomId) => {
         const game = games[roomId];
         const clientId = socket.client.id;
 
@@ -85,7 +74,7 @@ io.on(EVENTS.connection, (socket) => {
         }
     });
 
-    socket.on(EVENTS.playerReady, () => {
+    socket.on(SOCKET_EVENT.playerReady, () => {
         const clientId = socket.client.id;
         const game = getGameFromClientId(clientId);
 
@@ -95,7 +84,7 @@ io.on(EVENTS.connection, (socket) => {
         }
     });
 
-    socket.on(EVENTS.guessWord, (word) => {
+    socket.on(SOCKET_EVENT.guessWord, (word) => {
         const clientId = socket.client.id;
         const game = getGameFromClientId(clientId);
 
@@ -105,7 +94,7 @@ io.on(EVENTS.connection, (socket) => {
         }
     });
 
-    socket.on(EVENTS.disconnect, () => {
+    socket.on(SOCKET_EVENT.disconnect, () => {
         const clientId = socket.client.id;
         const game = getGameFromClientId(clientId);
 

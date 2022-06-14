@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import clsx from 'clsx';
 import s from './Timer.module.css';
 import gs from '../../global.module.css';
-import AnimatedText from '../AnimatedText/AnimatedText';
+import Animate from '../Animate/Animate';
 
 type Props = {
     timeLeft: number;
@@ -15,7 +15,7 @@ const Timer: FC<Props> = ({ timeLeft, label, enableAnimation = true }) => (
         <span className={clsx(gs.colorGray, gs.textAlignCenter)}>{label}</span>
 
         <div className={clsx(s.timer, gs.textAlignCenter)}>
-            <AnimatedText id="timer" text={timeLeft} animate={enableAnimation} />
+            <Animate id="timer" text={timeLeft} animate={enableAnimation} />
         </div>
     </div>
 );

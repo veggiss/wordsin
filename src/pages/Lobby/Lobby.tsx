@@ -36,6 +36,9 @@ const Lobby: FC = () => {
     const [ready, setReady] = useState(false);
     const { roomId } = useParams();
 
+    const opponentReady = gameState?.opponent?.ready;
+    const opponentId = gameState?.opponent?.id;
+
     const onClick = () => {
         setReady(true);
 
@@ -55,8 +58,8 @@ const Lobby: FC = () => {
                     You
                 </PlayerCard>
 
-                <PlayerCard ready={gameState?.opponent?.ready} disabled={true}>
-                    {gameState?.opponent ? 'Opponent' : 'Waiting for opponent..'}
+                <PlayerCard ready={opponentReady} disabled={true}>
+                    {opponentId ? 'Opponent' : 'Waiting for opponent..'}
                 </PlayerCard>
             </div>
         </CenterContainer>

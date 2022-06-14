@@ -25,6 +25,7 @@ interface Game {
     initiationTime: number;
     roomId: string;
     currentWord: string;
+    roundStarted: boolean;
     gameStarted: boolean;
     gameEnded: boolean;
 }
@@ -33,12 +34,9 @@ export interface GameState extends Game, LocalPlayerState {}
 interface IncomingGameState extends Game, IncomingPlayerState {}
 
 export const SOCKET_EVENT = {
-    gameTick: 'game-tick',
-    createRoom: 'create-room',
     joinRoom: 'join-room',
     connection: 'connection',
     disconnect: 'disconnect',
-    roomCreated: 'room-created',
     gameState: 'game-state',
     playerReady: 'player-ready',
     guessWord: 'guess-word',
@@ -60,11 +58,9 @@ const Provider: FC<PropsWithChildren> = ({ children }) => {
             delete state.player1;
             delete state.player2;
 
-            setGameState({ ...state, player, opponent });
-        });
+            if (state.gameEnded) socket.disconnect();
 
-        socket.on(SOCKET_EVENT.gameTick, (tick: number) => {
-            if (gameStateRef.current) setGameState({ ...gameStateRef.current, roundTime: tick });
+            setGameState({ ...state, player, opponent });
         });
     }, []);
 

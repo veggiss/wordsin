@@ -9,6 +9,8 @@ import Timer from '../../components/Timer/Timer';
 import { ColumnContainer } from '../../components/Container';
 import PlayerLabel from '../../components/PlayerLabel/PlayerLabel';
 import WordList from '../../components/WordList/WordList';
+import Animate from '../../components/Animate/Animate';
+import Button from '../../components/Button/Button';
 
 const Game: FC = () => {
     const socket = useContext(SocketContext);
@@ -21,7 +23,10 @@ const Game: FC = () => {
     const currentWord = gameState?.currentWord;
     const roundTime = gameState?.roundTime;
     const initiationTime = gameState?.initiationTime;
+    const roundStarted = gameState?.roundStarted;
+    const gameEnded = gameState?.gameEnded;
 
+    const getWinnerText = () => (player.winner ? 'You win!' : opponent.winner ? 'Opponent won!' : 'Draw!');
     const guessWord = (word: string) => socket.emit(SOCKET_EVENT.guessWord, word);
 
     return (
@@ -36,13 +41,17 @@ const Game: FC = () => {
                     <PlayerLabel name="You" score={player?.points} />
 
                     <ColumnContainer>
-                        <Input
-                            size="large"
-                            uppercase={true}
-                            placeholder="Write here"
-                            onEnter={(word) => guessWord(word)}
-                            clearOnEnter={true}
-                        />
+                        {roundStarted && !gameEnded ? (
+                            <Animate id="input" variant="fade-in">
+                                <Input
+                                    size="large"
+                                    uppercase={true}
+                                    placeholder="Write here"
+                                    onEnter={(word) => guessWord(word)}
+                                    clearOnEnter={true}
+                                />
+                            </Animate>
+                        ) : null}
                     </ColumnContainer>
 
                     <PlayerLabel name="Opponent" score={opponent?.points} />
@@ -52,11 +61,21 @@ const Game: FC = () => {
                     <WordList words={playerWords} />
 
                     <ColumnContainer>
-                        <Timer
-                            timeLeft={initiationTime ? initiationTime : roundTime}
-                            label={initiationTime ? 'Game starting in' : 'Time left'}
-                            enableAnimation={initiationTime ? true : roundTime <= 10}
-                        />
+                        {gameEnded ? (
+                            <span className={clsx(gs.fontExtraLarge, gs.textAlignCenter, gs.colorLight)}>
+                                <Animate id="win_text" text={getWinnerText()} />
+
+                                <Animate id="play_again" variant="fade-in">
+                                    <Button label="Play again" variant="light" onClick={() => location.reload()} />
+                                </Animate>
+                            </span>
+                        ) : (
+                            <Timer
+                                timeLeft={roundStarted ? roundTime : initiationTime}
+                                label={roundStarted ? 'Time left' : 'Game starting in'}
+                                enableAnimation={roundStarted ? roundTime <= 10 : initiationTime < 5}
+                            />
+                        )}
                     </ColumnContainer>
 
                     <WordList words={opponentWords} />

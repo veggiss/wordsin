@@ -3,7 +3,6 @@ const gameData = require('./gameData/gameData.json');
 class Player {
     constructor() {
         this.id = null;
-        this.disconnected = false;
         this.ready = false;
         this.points = 0;
         this.winner = false;
@@ -25,6 +24,7 @@ class Game {
             initiationTime: 5,
             roomId: roomId,
             currentWord: data.word,
+            roundStarted: false,
             gameStarted: false,
             gameEnded: false,
             player1: new Player(),
@@ -36,22 +36,30 @@ class Game {
         return [this.gameState.player1, this.gameState.player2];
     }
 
+    getPlayer(id) {
+        return this.getPlayers().find((player) => player.id === id);
+    }
+
     update() {
         if (this.gameState.gameEnded || !this.gameState.gameStarted) return;
 
-        if (this.gameState.initiationTime > 0) {
+        if (!this.gameState.roundStarted) {
             this.gameState.initiationTime--;
+
+            if (this.gameState.initiationTime === 0) this.gameState.roundStarted = true;
         } else {
             if (this.gameState.roundTime > 0) {
                 this.gameState.roundTime--;
-            } else {
-                const p1Points = this.gameState.player1.points;
-                const p2Points = this.gameState.player2.points;
 
-                if (p1Points > p2Points) this.gameState.player1.winner = true;
-                else if (p1Points < p2Points) this.gameState.player2.winner = true;
+                if (this.gameState.roundTime === 0) {
+                    const player1 = this.gameState.player1;
+                    const player2 = this.gameState.player2;
 
-                this.gameState.gameEnded = true;
+                    if (player1.points > player2.points) player1.winner = true;
+                    else if (player1.points < player2.points) player2.winner = true;
+
+                    this.gameState.gameEnded = true;
+                }
             }
         }
     }
@@ -59,29 +67,26 @@ class Game {
     guessWord(playerId, word) {
         if (this.gameState.initiationTime > 0) return;
 
-        for (const [i, player] of this.getPlayers().entries()) {
-            if (player.id === playerId && this.#correctWords.includes(word.toUpperCase())) {
-                const key = 'player' + (i + 1);
+        const player = this.getPlayer(playerId);
 
-                this.gameState[key].guessedWords.push(word);
-                this.gameState[key].points += word.length;
+        if (player) {
+            const wordUppercase = word.toUpperCase();
+            const guessedWords = this.getPlayers()
+                .map((player) => player.guessedWords)
+                .flat();
+
+            if (this.#correctWords.includes(wordUppercase) && !guessedWords.includes(wordUppercase)) {
+                player.guessedWords.push(wordUppercase);
+                player.points += word.length;
                 this.gameState.roundTime = 30;
             }
         }
     }
 
     playerJoin(id) {
-        for (const [i, player] of this.getPlayers().entries()) {
-            const index = i + 1;
-            const key = 'player' + index;
-
+        for (const player of this.getPlayers()) {
             if (!player.id) {
-                this.gameState[key].id = id;
-
-                break;
-            } else if (player.disconnected) {
-                this.gameState[key].id = id;
-                this.gameState[key].disconnected = false;
+                player.id = id;
 
                 break;
             }
@@ -89,26 +94,24 @@ class Game {
     }
 
     playerLeave(id) {
-        for (const [i, player] of this.getPlayers().entries()) {
-            if (id === player.id) {
-                this.gameState['player' + (i + 1)].disconnected = true;
+        const player = this.getPlayer(id);
 
-                break;
-            }
+        if (player) {
+            player.id = null;
+
+            if (!this.gameState.gameStarted) player.ready = false;
         }
     }
 
     setPlayerReady(id) {
-        for (const [i, player] of this.getPlayers().entries()) {
-            if (id === player.id) {
-                this.gameState['player' + (i + 1)].ready = true;
+        const player = this.getPlayer(id);
 
-                break;
+        if (player) {
+            player.ready = true;
+
+            if (!this.gameState.gameStarted && this.gameState.player1.ready && this.gameState.player2.ready) {
+                this.gameState.gameStarted = true;
             }
-        }
-
-        if (!this.gameState.gameStarted && this.gameState.player1.ready && this.gameState.player2.ready) {
-            this.gameState.gameStarted = true;
         }
     }
 }

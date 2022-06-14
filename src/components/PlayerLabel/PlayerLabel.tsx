@@ -3,7 +3,7 @@ import { ColumnContainer } from '../Container';
 import clsx from 'clsx';
 import gs from '../../global.module.css';
 import s from './PlayerLabel.module.css';
-import AnimatedText from '../AnimatedText/AnimatedText';
+import Animated from '../Animate/Animate';
 
 type Props = {
     name: string;
@@ -17,7 +17,7 @@ const PlayerLabel: FC<Props> = ({ name, score }) => (
         </span>
 
         <div className={clsx(s.score, gs.colorLight, gs.textAlignCenter)}>
-            <AnimatedText id={name} text={score} />
+            <Animated id={name} text={score} animate={score !== 0} />
         </div>
     </ColumnContainer>
 );

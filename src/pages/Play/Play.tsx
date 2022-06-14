@@ -8,7 +8,7 @@ const Play: FC = () => {
     const { gameState } = useContext(GameStateContext);
 
     useEffect(() => {
-        if (!gameState) return;
+        if (!gameState || gameState.gameEnded) return;
 
         setGameStarted(gameState.gameStarted);
     }, [gameState]);
