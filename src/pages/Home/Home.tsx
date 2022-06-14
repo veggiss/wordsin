@@ -1,29 +1,23 @@
-import React, { FC, useContext, useEffect } from 'react';
+import React, { FC, useContext } from 'react';
 import Logo from '../../components/Logo/Logo';
 import { CenterContainer } from '../../components/Container';
 import { useNavigate } from 'react-router-dom';
-import clsx from 'clsx';
-import gs from '../../global.module.css';
-import s from '../../components/Logo/Logo.module.css';
 import { SocketContext } from '../../context/Context';
+import Button from '../../components/Button/Button';
+import gs from '../../global.module.css';
+import clsx from 'clsx';
 
 const Home: FC = () => {
     const socket = useContext(SocketContext);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const roomId = socket.io.engine.id;
-
-        if (roomId) navigate(roomId);
-    }, [socket]);
-
     return (
         <CenterContainer>
-            <Logo disableSubText={true} />
+            <div className={clsx(gs.paddingBottom, gs.textAlignCenter)}>
+                <Logo label="Race against a friend to find the most words within a word." />
+            </div>
 
-            <span className={clsx(gs.fontMedium, gs.defaultCursor, s.subTitle)} onClick={() => navigate('roomId')}>
-                Creating lobby..
-            </span>
+            <Button label="Create lobby" variant="light" onClick={() => socket.id && navigate(socket.id)} />
         </CenterContainer>
     );
 };

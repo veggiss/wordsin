@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import gs from '../global.module.css';
 
 export const CenterContainer: FC<PropsWithChildren> = ({ children }) => (
-    <div style={{ height: '85vh' }} className={clsx(gs.centerHorizontal, gs.centerVertical, gs.column)}>
+    <div style={{ paddingTop: '10rem' }} className={clsx(gs.centerHorizontal, gs.centerVertical, gs.column)}>
         {children}
     </div>
 );

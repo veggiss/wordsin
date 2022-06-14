@@ -47,3 +47,7 @@
 .colorGray {
     color: var(--global-color-gray);
 }
+
+.paddingBottom {
+    padding-bottom: 2rem;
+}

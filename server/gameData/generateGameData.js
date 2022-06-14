@@ -6,7 +6,6 @@ const generateGameData = async () => {
     console.log(list);
 
     for (const word of list) {
-        console.log('starting with word:', word);
         const response = await fetch(`https://danielthepope-countdown-v1.p.rapidapi.com/solve/${word}?variance=100`, {
             headers: {
                 'X-RapidAPI-Key': '9b90cad4b1msh681beea50aa6613p1f48a6jsnbf16f98b4001',
@@ -14,8 +13,6 @@ const generateGameData = async () => {
         });
 
         if (response.ok) {
-            console.log('Response ok');
-
             const result = await response.json();
             const list = result
                 .map((item) => item.word)

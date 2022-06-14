@@ -4,21 +4,17 @@ import s from './Logo.module.css';
 import gs from '../../global.module.css';
 
 type Props = {
-    disableSubText?: boolean;
+    label?: string;
 };
 
-const Logo: FC<Props> = ({ disableSubText }) => (
+const Logo: FC<Props> = ({ label }) => (
     <>
         <div className={clsx(gs.fontExtraLarge, gs.defaultCursor)}>
             <span>Words</span>
             <span className={s.in}>in</span>
         </div>
 
-        {disableSubText ? null : (
-            <span className={clsx(gs.fontDefault, gs.defaultCursor, s.subTitle)}>
-                Find the words within the word. Your life depends on it.
-            </span>
-        )}
+        {label ? <span className={clsx(gs.fontDefault, gs.defaultCursor, gs.colorGray)}>{label}</span> : null}
     </>
 );
 

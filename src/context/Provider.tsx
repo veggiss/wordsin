@@ -35,7 +35,7 @@ interface IncomingGameState extends Game, IncomingPlayerState {}
 
 export const SOCKET_EVENT = {
     joinRoom: 'join-room',
-    connection: 'connection',
+    connect: 'connect',
     disconnect: 'disconnect',
     gameState: 'game-state',
     playerReady: 'player-ready',

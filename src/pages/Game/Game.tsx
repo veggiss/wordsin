@@ -16,17 +16,18 @@ const Game: FC = () => {
     const socket = useContext(SocketContext);
     const { gameState } = useContext(GameStateContext);
 
-    const player = gameState?.player;
-    const opponent = gameState?.opponent;
-    const playerWords = player?.guessedWords || [];
-    const opponentWords = opponent?.guessedWords || [];
-    const currentWord = gameState?.currentWord;
-    const roundTime = gameState?.roundTime;
-    const initiationTime = gameState?.initiationTime;
-    const roundStarted = gameState?.roundStarted;
-    const gameEnded = gameState?.gameEnded;
+    const gState = {
+        player: gameState?.player,
+        opponent: gameState?.opponent,
+        currentWord: gameState?.currentWord,
+        roundTime: gameState?.roundTime,
+        initiationTime: gameState?.initiationTime,
+        roundStarted: gameState?.roundStarted,
+        gameEnded: gameState?.gameEnded,
+    };
 
-    const getWinnerText = () => (player.winner ? 'You win!' : opponent.winner ? 'Opponent won!' : 'Draw!');
+    const getWinnerText = () =>
+        gState.player.winner ? 'You win!' : gState.opponent.winner ? 'Opponent won!' : 'Draw!';
     const guessWord = (word: string) => socket.emit(SOCKET_EVENT.guessWord, word);
 
     return (
@@ -34,14 +35,14 @@ const Game: FC = () => {
             <div className={gs.column}>
                 <div className={clsx(s.titleContainer, gs.defaultCursor)}>
                     <div className={clsx(gs.colorGray, gs.textAlignCenter)}>Find the words in</div>
-                    <div className={s.title}>{currentWord ? currentWord : '...'}</div>
+                    <div className={s.title}>{gState.currentWord ? gState.currentWord : '...'}</div>
                 </div>
 
                 <div className={clsx(gs.spaceBetween, gs.centerHorizontal)}>
-                    <PlayerLabel name="You" score={player?.points} />
+                    <PlayerLabel name="You" score={gState.player?.points} />
 
                     <ColumnContainer>
-                        {roundStarted && !gameEnded ? (
+                        {gState.roundStarted && !gState.gameEnded ? (
                             <Animate id="input" variant="fade-in">
                                 <Input
                                     size="large"
@@ -54,14 +55,14 @@ const Game: FC = () => {
                         ) : null}
                     </ColumnContainer>
 
-                    <PlayerLabel name="Opponent" score={opponent?.points} />
+                    <PlayerLabel name="Opponent" score={gState.opponent?.points} />
                 </div>
 
                 <div className={clsx(gs.spaceBetween, gs.defaultCursor)}>
-                    <WordList words={playerWords} />
+                    <WordList words={gState.player?.guessedWords || []} />
 
                     <ColumnContainer>
-                        {gameEnded ? (
+                        {gState.gameEnded ? (
                             <span className={clsx(gs.fontExtraLarge, gs.textAlignCenter, gs.colorLight)}>
                                 <Animate id="win_text" text={getWinnerText()} />
 
@@ -71,14 +72,16 @@ const Game: FC = () => {
                             </span>
                         ) : (
                             <Timer
-                                timeLeft={roundStarted ? roundTime : initiationTime}
-                                label={roundStarted ? 'Time left' : 'Game starting in'}
-                                enableAnimation={roundStarted ? roundTime <= 10 : initiationTime < 5}
+                                timeLeft={gState.roundStarted ? gState.roundTime : gState.initiationTime}
+                                label={gState.roundStarted ? 'Time left' : 'Game starting in'}
+                                enableAnimation={
+                                    gState.roundStarted ? gState.roundTime <= 10 : gState.initiationTime < 5
+                                }
                             />
                         )}
                     </ColumnContainer>
 
-                    <WordList words={opponentWords} />
+                    <WordList words={gState.opponent?.guessedWords || []} />
                 </div>
             </div>
         </>
