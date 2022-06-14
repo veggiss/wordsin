@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "start": "yarn build && node server/index.js",
+    "start": "node server/index.js",
     "start-dev": "webpack serve --port 3000 --mode development",
     "build": "webpack --mode production",
     "start-server": "node server/index.js"
