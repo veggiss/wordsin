@@ -2,11 +2,11 @@ import React, { FC, PropsWithChildren, useContext, useEffect, useState } from 'r
 import Button from '../../components/Button/Button';
 import Card from '../../components/Card/Card';
 import Logo from '../../components/Logo/Logo';
-import Container from '../../components/Container';
+import { CenterContainer } from '../../components/Container';
 import { useParams } from 'react-router-dom';
 import gs from '../../global.module.css';
 import clsx from 'clsx';
-import { getOpponent, Player, SOCKET_EVENT } from '../../context/Provider';
+import { SOCKET_EVENT } from '../../context/Provider';
 import { GameStateContext, SocketContext } from '../../context/Context';
 
 interface ReadyButtonProps extends PropsWithChildren {
@@ -34,7 +34,6 @@ const Lobby: FC = () => {
     const socket = useContext(SocketContext);
     const { gameState } = useContext(GameStateContext);
     const [ready, setReady] = useState(false);
-    const [opponent, setOpponent] = useState<Player>();
     const { roomId } = useParams();
 
     const onClick = () => {
@@ -47,16 +46,8 @@ const Lobby: FC = () => {
         socket.emit(SOCKET_EVENT.joinRoom, roomId);
     }, []);
 
-    useEffect(() => {
-        if (gameState) {
-            const opponent = getOpponent(gameState, socket.io.engine.id);
-
-            if (opponent) setOpponent(opponent);
-        }
-    }, [gameState]);
-
     return (
-        <Container>
+        <CenterContainer>
             <Logo />
 
             <div className={gs.row}>
@@ -64,11 +55,11 @@ const Lobby: FC = () => {
                     You
                 </PlayerCard>
 
-                <PlayerCard ready={opponent?.ready} disabled={true}>
-                    {opponent ? 'Opponent' : 'Waiting for opponent..'}
+                <PlayerCard ready={gameState?.opponent?.ready} disabled={true}>
+                    {gameState?.opponent ? 'Opponent' : 'Waiting for opponent..'}
                 </PlayerCard>
             </div>
-        </Container>
+        </CenterContainer>
     );
 };
 

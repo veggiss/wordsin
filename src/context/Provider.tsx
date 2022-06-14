@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useEffect, useState } from 'react';
+import React, { FC, PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { GameStateContext, SocketContext, socketContextValue } from './Context';
 
 export type Player = {
@@ -6,20 +6,31 @@ export type Player = {
     disconnected: boolean;
     ready: boolean;
     points: number;
+    guessedWords: string[];
+    winner: boolean;
 };
 
-export type GameState = {
+type IncomingPlayerState = {
+    player1: Player;
+    player2: Player;
+};
+
+type LocalPlayerState = {
+    player: Player;
+    opponent: Player;
+};
+
+interface Game {
     roundTime: number;
-    initiationTimer: number;
+    initiationTime: number;
     roomId: string;
     currentWord: string;
     gameStarted: boolean;
     gameEnded: boolean;
-    guessedWords: string[];
-    player1: Player;
-    player2: Player;
-    error: boolean;
-};
+}
+
+export interface GameState extends Game, LocalPlayerState {}
+interface IncomingGameState extends Game, IncomingPlayerState {}
 
 export const SOCKET_EVENT = {
     gameTick: 'game-tick',
@@ -30,25 +41,36 @@ export const SOCKET_EVENT = {
     roomCreated: 'room-created',
     gameState: 'game-state',
     playerReady: 'player-ready',
+    guessWord: 'guess-word',
 };
-
-export const getOpponent = (gameState: GameState, clientId: string) =>
-    [gameState.player1, gameState.player2].find((player) => player?.id && player.id !== clientId);
 
 const Provider: FC<PropsWithChildren> = ({ children }) => {
     const socket = socketContextValue;
     const [gameState, setGameState] = useState<GameState>();
+    const gameStateRef = useRef<GameState>();
 
     useEffect(() => {
-        socket.on(SOCKET_EVENT.gameState, (state: GameState) => {
-            console.log('setting game state', state);
-            setGameState(state);
+        socket.on(SOCKET_EVENT.gameState, (state: IncomingGameState) => {
+            const id = socket.io.engine.id;
+            const players = [state.player1, state.player2];
+
+            const player = players.find((p) => p.id === id);
+            const opponent = players.find((p) => p.id !== id);
+
+            delete state.player1;
+            delete state.player2;
+
+            setGameState({ ...state, player, opponent });
         });
 
         socket.on(SOCKET_EVENT.gameTick, (tick: number) => {
-            console.log('tick', tick);
+            if (gameStateRef.current) setGameState({ ...gameStateRef.current, roundTime: tick });
         });
     }, []);
+
+    useEffect(() => {
+        gameStateRef.current = gameState;
+    }, [gameState]);
 
     return (
         <SocketContext.Provider value={socket}>

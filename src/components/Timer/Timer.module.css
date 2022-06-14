@@ -1,0 +1,8 @@
+.timerContainer {
+    margin: 2rem;
+    white-space: nowrap;
+}
+
+.timer {
+    font-size: 4rem;
+}

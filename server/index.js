@@ -20,30 +20,22 @@ const EVENTS = {
     roomCreated: 'room-created',
     gameState: 'game-state',
     playerReady: 'player-ready',
+    guessWord: 'guess-word',
 };
 
-const games = [];
+const games = {};
 
 app.use(express.json());
 app.use(express.static('build'));
 
-setInterval(() => {
-    games.forEach((game) => {
-        if (game.gameState.gameStarted) {
-            game.update();
-
-            io.in(game.gameState.roomId).emit(EVENTS.gameTick, game.gameState.roundTime);
-        }
-    });
-}, 1000);
-
 const emitGameState = (game) => io.in(game.gameState.roomId).emit(EVENTS.gameState, game.gameState);
-const gameExist = (roomId) => games.some((game) => game.gameState.roomId === roomId);
+const emitRoundTime = (game) => io.in(game.gameState.roomId).emit(EVENTS.gameTick, game.gameState.roundTime);
 
+const pushGame = (game) => (games[game.gameState.roomId] = game);
+const getGames = () => Object.values(games);
 const getRoom = (roomId) => io.sockets.adapter.rooms.get(roomId);
-const getGameFromRoomId = (roomId) => games.find((game) => game.gameState.roomId === roomId);
 const getGameFromClientId = (clientId) =>
-    games.find((game) => [game.gameState.player1.id, game.gameState.player2.id].some((id) => clientId === id));
+    getGames().find((game) => [game.gameState.player1.id, game.gameState.player2.id].some((id) => clientId === id));
 
 app.all('*', (req, res) => {
     res.sendFile(HTML_FILE, (err) => {
@@ -51,9 +43,26 @@ app.all('*', (req, res) => {
     });
 });
 
+setInterval(() => {
+    getGames().forEach((game) => {
+        if (game.gameState.gameStarted) {
+            game.update();
+
+            if (game.gameState.initiationTime > 0) {
+                emitGameState(game);
+            } else if (!game.gameState.gameEnded) {
+                game.gameState.roundTime === 30 ? emitGameState(game) : emitRoundTime(game);
+            } else {
+                emitGameState(game);
+                delete games[game.gameState.roomId];
+            }
+        }
+    });
+}, 1000);
+
 io.on(EVENTS.connection, (socket) => {
     socket.on(EVENTS.joinRoom, (roomId) => {
-        const game = getGameFromRoomId(roomId);
+        const game = games[roomId];
         const clientId = socket.client.id;
 
         if (game) {
@@ -69,7 +78,7 @@ io.on(EVENTS.connection, (socket) => {
             const newGame = new Game(roomId);
 
             newGame.playerJoin(clientId);
-            games.push(newGame);
+            pushGame(newGame);
 
             socket.join(roomId);
             emitGameState(newGame);
@@ -82,6 +91,16 @@ io.on(EVENTS.connection, (socket) => {
 
         if (game) {
             game.setPlayerReady(clientId);
+            emitGameState(game);
+        }
+    });
+
+    socket.on(EVENTS.guessWord, (word) => {
+        const clientId = socket.client.id;
+        const game = getGameFromClientId(clientId);
+
+        if (word && game) {
+            game.guessWord(clientId, word);
             emitGameState(game);
         }
     });

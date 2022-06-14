@@ -6,26 +6,29 @@ class Player {
         this.disconnected = false;
         this.ready = false;
         this.points = 0;
+        this.winner = false;
+        this.guessedWords = [];
     }
 }
 
 class Game {
+    #correctWords;
+
     constructor(roomId) {
         const index = Math.floor(Math.random() * gameData.length);
         const data = gameData[index];
-        const correctWords = data.result;
+
+        this.#correctWords = data.result;
 
         this.gameState = {
             roundTime: 30,
-            initiationTimer: 5,
+            initiationTime: 5,
             roomId: roomId,
             currentWord: data.word,
             gameStarted: false,
             gameEnded: false,
-            guessedWords: [],
             player1: new Player(),
             player2: new Player(),
-            error: false,
         };
     }
 
@@ -36,18 +39,36 @@ class Game {
     update() {
         if (this.gameState.gameEnded || !this.gameState.gameStarted) return;
 
-        if (this.gameState.initiationTimer > 0) {
-            this.gameState.initiationTimer--;
+        if (this.gameState.initiationTime > 0) {
+            this.gameState.initiationTime--;
         } else {
             if (this.gameState.roundTime > 0) {
                 this.gameState.roundTime--;
             } else {
+                const p1Points = this.gameState.player1.points;
+                const p2Points = this.gameState.player2.points;
+
+                if (p1Points > p2Points) this.gameState.player1.winner = true;
+                else if (p1Points < p2Points) this.gameState.player2.winner = true;
+
                 this.gameState.gameEnded = true;
             }
         }
     }
 
-    guessWord(playerId, word) {}
+    guessWord(playerId, word) {
+        if (this.gameState.initiationTime > 0) return;
+
+        for (const [i, player] of this.getPlayers().entries()) {
+            if (player.id === playerId && this.#correctWords.includes(word.toUpperCase())) {
+                const key = 'player' + (i + 1);
+
+                this.gameState[key].guessedWords.push(word);
+                this.gameState[key].points += word.length;
+                this.gameState.roundTime = 30;
+            }
+        }
+    }
 
     playerJoin(id) {
         for (const [i, player] of this.getPlayers().entries()) {
@@ -90,8 +111,6 @@ class Game {
             this.gameState.gameStarted = true;
         }
     }
-
-    end() {}
 }
 
 module.exports = { Game, Player };

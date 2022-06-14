@@ -4,11 +4,6 @@
     text-align: center;
 }
 
-.label {
-    color: var(--global-color-gray);
-    text-align: center;
-}
-
 .titleContainer {
     padding-top: 6rem;
     padding-bottom: 2rem;

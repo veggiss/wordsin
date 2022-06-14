@@ -1,4 +1,11 @@
-body, html { margin: 0; padding: 0; background: #202124; font-family: "Poppins", sans-serif; color: #f6f1eb; }
+body, html {
+    margin: 0;
+    padding: 0;
+    background: #202124;
+    font-family: "Poppins", sans-serif;
+    color: #f6f1eb;
+    overflow-x: hidden;
+}
 
 * {
     box-sizing: border-box;

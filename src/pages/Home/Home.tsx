@@ -1,6 +1,6 @@
 import React, { FC, useContext, useEffect } from 'react';
 import Logo from '../../components/Logo/Logo';
-import Container from '../../components/Container';
+import { CenterContainer } from '../../components/Container';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import gs from '../../global.module.css';
@@ -18,13 +18,13 @@ const Home: FC = () => {
     }, [socket]);
 
     return (
-        <Container>
+        <CenterContainer>
             <Logo disableSubText={true} />
 
             <span className={clsx(gs.fontMedium, gs.defaultCursor, s.subTitle)} onClick={() => navigate('roomId')}>
                 Creating lobby..
             </span>
-        </Container>
+        </CenterContainer>
     );
 };
 

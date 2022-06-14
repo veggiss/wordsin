@@ -43,3 +43,7 @@
 .colorLight {
     color: var(--global-color-cream-white)
 }
+
+.colorGray {
+    color: var(--global-color-gray);
+}
